@@ -601,7 +601,7 @@ class Printer
         $width  = $image->getImageWidth();
         $height = $image->getImageHeight();
 
-        $bitmap = $image->exportImagePixels(0, 0, $width, $height, 'R', \Imagick::COLOR_BLACK);
+        $bitmap = $image->exportImagePixels(0, 0, $width, $height, 'R', \Imagick::PIXEL_CHAR);
 
         $this->printBitmap($width, $height, $bitmap, true);
 
