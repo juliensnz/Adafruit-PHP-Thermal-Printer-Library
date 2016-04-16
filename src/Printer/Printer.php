@@ -38,26 +38,45 @@
 //from serial import Serial
 //import time
 
-namespace Kesonno;
+namespace Printer;
+
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class Printer
 {
-    protected $_serial = null;
+    protected $serial = null;
 
-    public $resumeTime      =  0.0;
-    public $byteTime        =  0.0;
-    public $dotPrintTime    =  0.033;
-    public $dotFeedTime     =  0.0025;
-    public $prevByte        = '\n';
-    public $column          =  0;
-    public $maxColumn       = 32;
-    public $charHeight      = 24;
-    public $lineSpacing     =  8;
-    public $barcodeHeight   = 50;
-    public $printMode       =  0;
-    public $defaultHeatTime = 60;
-    public $defaultBaudrate = 19200;
-    public $defaultDevide   = '/dev/ttyAMA0';
+    protected $defaults = [
+        'resumeTime'    => 0.0,
+        'byteTime'      => 0.0,
+        'dotPrintTime'  => 0.033,
+        'dotFeedTime'   => 0.0025,
+        'prevByte'      => '\n',
+        'column'        => 0,
+        'maxColumn'     => 32,
+        'charHeight'    => 24,
+        'lineSpacing'   => 8,
+        'barcodeHeight' => 50,
+        'printMode'     => 0,
+        'heatTime'      => 60,
+        'baudrate'      => 19200,
+        'devide'        => '/dev/ttyAMA0',
+    ];
+
+    public $resumeTime;
+    public $byteTime;
+    public $dotPrintTime;
+    public $dotFeedTime;
+    public $prevByte;
+    public $column;
+    public $maxColumn;
+    public $charHeight;
+    public $lineSpacing;
+    public $barcodeHeight;
+    public $printMode;
+    public $heatTime;
+    public $baudrate;
+    public $devide;
 
     # === Character commands ===
 
@@ -70,28 +89,44 @@ class Printer
 
     public function __construct($config = array())
     {
-        $baudrate = $config['baudrate'] ?: $this->defaultBaudrate;
-        $device = $config['device'] ?: $this->defaultDevide;
+        $optionsResolver = new OptionsResolver();
+        $optionsResolver->setDefaults($this->defaults);
+        $config = $optionsResolver->resolve($config);
+
+        $this->resumeTime    = $config['resumeTime'];
+        $this->byteTime      = $config['byteTime'];
+        $this->dotPrintTime  = $config['dotPrintTime'];
+        $this->dotFeedTime   = $config['dotFeedTime'];
+        $this->prevByte      = $config['prevByte'];
+        $this->column        = $config['column'];
+        $this->maxColumn     = $config['maxColumn'];
+        $this->charHeight    = $config['charHeight'];
+        $this->lineSpacing   = $config['lineSpacing'];
+        $this->barcodeHeight = $config['barcodeHeight'];
+        $this->printMode     = $config['printMode'];
+        $this->heatTime      = $config['heatTime'];
+        $this->baudrate      = $config['baudrate'];
+        $this->devide        = $config['devide'];
 
         # Calculate time to issue one byte to the printer.
         # 11 bits (not 8) to accommodate idle, start and stop bits.
         # Idle time might be unnecessary, but erring on side of
         # caution here.
-        $this->byteTime = 11.0 / (float) $baudrate;
+        $this->byteTime = 11.0 / (float) $this->baudrate;
 
-        $this->_serial = new PhpSerial();
+        $this->serial = new PhpSerial();
 
-        $this->_serial->deviceSet($device);
+        $this->serial->deviceSet($this->device);
 
         # We can change the baud rate, parity, length, stop bits, flow control
-        $this->_serial->confBaudRate($baudrate);
-        //$this->_serial->confParity("none");
-        //$this->_serial->confCharacterLength(8);
-        //$this->_serial->confStopBits(1);
-        //$this->_serial->confFlowControl("none");
+        $this->serial->confBaudRate($baudrate);
+        //$this->serial->confParity("none");
+        //$this->serial->confCharacterLength(8);
+        //$this->serial->confStopBits(1);
+        //$this->serial->confFlowControl("none");
 
         # Then we need to open it
-        $this->_serial->deviceOpen();
+        $this->serial->deviceOpen();
 
         # The printer can't start receiving data immediately upon
         # power up -- it needs a moment to cold boot and initialize.
@@ -116,7 +151,7 @@ class Printer
         # blank page may occur.  The more heating interval, the more
         # clear, but the slower printing speed.
 
-        $heatTime = isset($config['heattime']) ? $config['heattime'] : $this->defaultHeatTime;
+        $heatTime = isset($config['heattime']) ? $config['heattime'] : $this->heatTime;
         $this->writeBytes(
           27,        # Esc
           55,        # 7 (print settings)
@@ -205,7 +240,7 @@ class Printer
         $this->timeoutSet(sizeof($args) * $this->byteTime);
 
         foreach ($args as $arg) {
-            $this->_serial->sendMessage(chr($arg));
+            $this->serial->sendMessage(chr($arg));
         }
     }
 
@@ -218,7 +253,7 @@ class Printer
             if ($c != 0x13) {
                 $this->timeoutWait();
 
-                $this->_serial->sendMessage($c);
+                $this->serial->sendMessage($c);
 
                 $d = $this->byteTime;
                 if (($c == '\n') or ($this->column == $this->maxColumn)) {
@@ -254,7 +289,7 @@ class Printer
     # code that might get ported directly from Arduino.
     public function begin($heatTime = null)
     {
-        $heatTime = $heatTime ?: $this->defaultHeatTime;
+        $heatTime = $heatTime ?: $this->heatTime;
         $this->writeBytes(
           27,        # Esc
           55,        # 7 (print settings)
@@ -322,7 +357,7 @@ class Printer
         $this->timeoutSet(($this->barcodeHeight + 40) * $this->dotPrintTime);
 
         //super(Adafruit_Thermal, self).write(text)
-        $this->_serial->sendMessage($text);
+        $this->serial->sendMessage($text);
 
         $this->prevByte = '\n';
         $this->feed(2);
@@ -551,7 +586,7 @@ class Printer
             for ($y = 0; $y <= $chunkHeight; $y++):
                 for ($x = 0; $x <= $rowBytesClipped; $x++):
                     //super(Adafruit_Thermal, self).write(chr(bitmap[i]))
-                    $this->_serial->sendMessage(chr($bitmap[$i]));
+                    $this->serial->sendMessage(chr($bitmap[$i]));
                     $i += 1;
                 endfor;
                 $i += $rowBytes - $rowBytesClipped;
@@ -654,7 +689,7 @@ class Printer
     {
         $this->writeBytes(27, 118, 0);
         # Bit 2 of response seems to be paper status
-        $stat = ord($this->_serial->readPort(1)) & 0b00000100;
+        $stat = ord($this->serial->readPort(1)) & 0b00000100;
         # If set, we have paper; if clear, no paper
         return ($stat == 0);
     }
