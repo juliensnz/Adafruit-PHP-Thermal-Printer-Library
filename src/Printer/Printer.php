@@ -60,32 +60,32 @@ class Printer
         'printMode'     => 0,
         'heatTime'      => 60,
         'baudrate'      => 19200,
-        'devide'        => '/dev/ttyAMA0',
+        'device'        => '/dev/ttyAMA0',
     ];
 
-    public $resumeTime;
-    public $byteTime;
-    public $dotPrintTime;
-    public $dotFeedTime;
-    public $prevByte;
-    public $column;
-    public $maxColumn;
-    public $charHeight;
-    public $lineSpacing;
-    public $barcodeHeight;
-    public $printMode;
-    public $heatTime;
-    public $baudrate;
-    public $devide;
+    protected $resumeTime;
+    protected $byteTime;
+    protected $dotPrintTime;
+    protected $dotFeedTime;
+    protected $prevByte;
+    protected $column;
+    protected $maxColumn;
+    protected $charHeight;
+    protected $lineSpacing;
+    protected $barcodeHeight;
+    protected $printMode;
+    protected $heatTime;
+    protected $baudrate;
+    protected $device;
 
     # === Character commands ===
 
-    public $INVERSE_MASK;
-    public $UPDOWN_MASK;
-    public $BOLD_MASK;
-    public $DOUBLE_HEIGHT_MASK;
-    public $DOUBLE_WIDTH_MASK;
-    public $STRIKE_MASK;
+    protected $INVERSE_MASK;
+    protected $UPDOWN_MASK;
+    protected $BOLD_MASK;
+    protected $DOUBLE_HEIGHT_MASK;
+    protected $DOUBLE_WIDTH_MASK;
+    protected $STRIKE_MASK;
 
     public function __construct($config = array())
     {
@@ -106,7 +106,7 @@ class Printer
         $this->printMode     = $config['printMode'];
         $this->heatTime      = $config['heatTime'];
         $this->baudrate      = $config['baudrate'];
-        $this->devide        = $config['devide'];
+        $this->device        = $config['device'];
 
         # Calculate time to issue one byte to the printer.
         # 11 bits (not 8) to accommodate idle, start and stop bits.
@@ -114,7 +114,7 @@ class Printer
         # caution here.
         $this->byteTime = 11.0 / (float) $this->baudrate;
 
-        $this->serial = new PhpSerial();
+        $this->serial = new \PhpSerial();
 
         $this->serial->deviceSet($this->device);
 
@@ -356,7 +356,6 @@ class Printer
         $this->timeoutWait();
         $this->timeoutSet(($this->barcodeHeight + 40) * $this->dotPrintTime);
 
-        //super(Adafruit_Thermal, self).write(text)
         $this->serial->sendMessage($text);
 
         $this->prevByte = '\n';
@@ -585,7 +584,6 @@ class Printer
 
             for ($y = 0; $y <= $chunkHeight; $y++):
                 for ($x = 0; $x <= $rowBytesClipped; $x++):
-                    //super(Adafruit_Thermal, self).write(chr(bitmap[i]))
                     $this->serial->sendMessage(chr($bitmap[$i]));
                     $i += 1;
                 endfor;
@@ -596,6 +594,11 @@ class Printer
         endfor;
 
         $this->prevByte = '\n';
+    }
+
+    public function printImage()
+    {
+
     }
 
     // @TODO
