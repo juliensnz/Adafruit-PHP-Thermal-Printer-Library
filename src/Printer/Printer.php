@@ -119,7 +119,7 @@ class Printer
         $this->serial->deviceSet($this->device);
 
         # We can change the baud rate, parity, length, stop bits, flow control
-        $this->serial->confBaudRate($baudrate);
+        $this->serial->confBaudRate($this->baudrate);
         //$this->serial->confParity("none");
         //$this->serial->confCharacterLength(8);
         //$this->serial->confStopBits(1);
