@@ -596,7 +596,7 @@ class Printer
         $this->prevByte = '\n';
     }
 
-    public function printImage(Imagick $image)
+    public function printImage(\Imagick $image)
     {
         $width  = $image->getImageWidth();
         $height = $image->getImageHeight();
