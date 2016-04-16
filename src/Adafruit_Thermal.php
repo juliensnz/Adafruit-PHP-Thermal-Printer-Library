@@ -38,7 +38,9 @@
 //from serial import Serial
 //import time
 
-class Adafruit_Thermal
+namespace Kesonno;
+
+class Printer
 {
     protected $_serial = null;
 

@@ -13,6 +13,8 @@
         "hyperthese/php-serial": "1.0.*"
     },
     "autoload": {
-        "classmap": ["src/"]
+        "psr-0": {
+            "": "src/"
+        }
     }
 }
