@@ -596,8 +596,14 @@ class Printer
         $this->prevByte = '\n';
     }
 
-    public function printImage()
+    public function printImage(Imagick $image)
     {
+        $width  = $image->getImageWidth();
+        $height = $image->getImageHeight();
+
+        $bitmap = $image->exportImagePixels(0, 0, $width, $height, 'R', Imagick::COLOR_BLACK);
+
+        $this->printBitmap($width, $height, $bitmap, true);
 
     }
 
