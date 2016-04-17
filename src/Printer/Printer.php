@@ -178,8 +178,8 @@ class Printer
           ($printBreakTime << 5) | $printDensity
         );
 
-        // $this->dotPrintTime = 0.03;
-        // $this->dotFeedTime  = 0.0021;
+        $this->dotPrintTime = 0.03;
+        $this->dotFeedTime  = 0.0021;
 
         $this->INVERSE_MASK       = (1 << 1);
         $this->UPDOWN_MASK        = (1 << 2);
@@ -637,7 +637,7 @@ class Printer
             return $value;
         }, $bitmap);
 
-        $this->printBitmap($width, $height, $bitmap, false);
+        $this->printBitmap($width, $height, $bitmap, true);
     }
 
     # Take the printer offline. Print commands sent after this
