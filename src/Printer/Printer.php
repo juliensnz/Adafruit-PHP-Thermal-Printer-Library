@@ -577,17 +577,18 @@ class Printer
             }
 
             # Timeout wait happens here
-            $this->writeBytes(18, 42, $chunkHeight, $rowBytesClipped);
+            $this->serial->sendMessage(18, 0);
+            $this->serial->sendMessage(42, 0);
+            $this->serial->sendMessage($chunkHeight, 0);
+            $this->serial->sendMessage($rowBytesClipped, 0);
 
             for ($y = 0; $y < $chunkHeight; $y++) {
                 for ($x = 0; $x < $rowBytesClipped; $x++) {
-                    $this->serial->sendMessage(chr($bitmap[$i]));
+                    $this->serial->sendMessage(chr($bitmap[$i]), 0);
                     $i += 1;
                 }
                 $i += $rowBytes - $rowBytesClipped;
             }
-
-            $this->timeoutSet($chunkHeight * $this->dotPrintTime);
         }
 
         $this->prevByte = '\n';
