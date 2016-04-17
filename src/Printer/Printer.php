@@ -204,13 +204,13 @@ class Printer
     # Sets estimated completion time for a just-issued task.
     public function timeoutSet($x)
     {
-        $this->resumeTime = time() + $x;
+        $this->resumeTime = microtime(true) + $x;
     }
 
     # Waits (if necessary) for the prior task to complete.
     public function timeoutWait()
     {
-        while ((time() - $this->resumeTime) < 0) continue;
+        while ((microtime(true) - $this->resumeTime) < 0) continue;
     }
 
     # Printer performance may vary based on the power supply voltage,
