@@ -612,7 +612,7 @@ class Printer
         echo "boucle\n";
         for ($y = 0; $y < $height; $y++) {
             echo "y: $y\n";
-            $pixels = $image->exportImagePixels(0, $y, $width, $height, 'R', \Imagick::PIXEL_CHAR);
+            $pixels = $image->exportImagePixels(0, $y, $width, 1, 'R', \Imagick::PIXEL_CHAR);
             $pixels = array_map(function ($value) {
                 return 0 === $value ? 0 : 255;
             }, $pixels);
