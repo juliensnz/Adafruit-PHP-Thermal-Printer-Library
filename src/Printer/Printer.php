@@ -607,7 +607,7 @@ class Printer
         }
 
         $rowBytes = (int) (($width + 7) / 8);
-        var_dump($rowBytes);
+
         $bitmap = array_fill(0, $rowBytes * $height, null);
 
         for ($y = 0; $y < $height; $y++) {
