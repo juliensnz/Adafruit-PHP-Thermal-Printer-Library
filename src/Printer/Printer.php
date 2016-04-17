@@ -178,8 +178,8 @@ class Printer
           ($printBreakTime << 5) | $printDensity
         );
 
-        $this->dotPrintTime = 0.03;
-        $this->dotFeedTime  = 0.0021;
+        // $this->dotPrintTime = 0.03;
+        // $this->dotFeedTime  = 0.0021;
 
         $this->INVERSE_MASK       = (1 << 1);
         $this->UPDOWN_MASK        = (1 << 2);
@@ -587,7 +587,7 @@ class Printer
                 $i += $rowBytes - $rowBytesClipped;
             }
 
-            // $this->timeoutSet($chunkHeight * $this->dotPrintTime);
+            $this->timeoutSet($chunkHeight * $this->dotPrintTime);
         }
 
         $this->prevByte = '\n';
