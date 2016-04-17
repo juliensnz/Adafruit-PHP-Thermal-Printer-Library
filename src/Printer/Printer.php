@@ -248,7 +248,7 @@ class Printer
     public function write()
     {
         $data = func_get_args();
-        for ($i = 0; $i <= sizeof($data); $i++) {
+        for ($i = 0; $i < count($data); $i++) {
             var_dump($data);
             $c = $data[$i];
             if ($c != 0x13) {
@@ -578,10 +578,10 @@ class Printer
             }
 
             # Timeout wait happens here
-            $this->serial->sendMessage(18, 0);
-            $this->serial->sendMessage(42, 0);
-            $this->serial->sendMessage($chunkHeight, 0);
-            $this->serial->sendMessage($rowBytesClipped, 0);
+            $this->serial->sendMessage(chr(18), 0);
+            $this->serial->sendMessage(chr(42), 0);
+            $this->serial->sendMessage(chr($chunkHeight), 0);
+            $this->serial->sendMessage(chr($rowBytesClipped), 0);
 
             for ($y = 0; $y < $chunkHeight; $y++) {
                 for ($x = 0; $x < $rowBytesClipped; $x++) {
