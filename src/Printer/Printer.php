@@ -600,8 +600,46 @@ class Printer
     {
         $width  = $image->getImageWidth();
         $height = $image->getImageHeight();
+        $image->setImageColorspace(\Imagick::COLORSPACE_GRAY);
 
-        $bitmap = $image->exportImagePixels(0, 0, $width, $height, 'R', \Imagick::PIXEL_CHAR);
+        if ($width > 384) {
+            $width = 384;
+        }
+
+        $rowBytes = (int) (($width + 7) / 8);
+        var_dump($rowBytes);
+        $bitmap = array_fill(0, $rowBytes * $height, null);
+
+        for ($y = 0; $y < $height; $y++) {
+            $pixels = $image->exportImagePixels(0, $y, $width, $height, 'R', \Imagick::PIXEL_CHAR);
+            $pixels = array_map(function ($value) {
+                return 0 === $value ? 0 : 255;
+            }, $pixels);
+
+            $n = $y * $rowBytes;
+            $x = 0;
+            for ($b = 0; $b < $rowBytes; $b++) {
+                $sum = 0;
+                $bit = 128;
+                while ($bit > 0) {
+                    if ($x >= $width) {
+                        break;
+                    }
+                    if (0 == $pixels[$x]) {
+                        $sum |= $bit;
+                    }
+
+                    $x++;
+                    $bit >>= 1;
+                }
+
+                $bitmap[$n + $b] = $sum;
+            }
+        }
+
+        $bitmap = array_map(function ($value) {
+            return ord($value);
+        }, $bitmap);
 
         $this->printBitmap($width, $height, $bitmap, true);
     }
