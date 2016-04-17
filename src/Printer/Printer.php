@@ -589,13 +589,11 @@ class Printer
                     $i += 1;
                 }
                 $i += $rowBytes - $rowBytesClipped;
+                usleep(10);
             }
-        }
 
-        $this->serial->sendMessage(chr(18), 0);
-        $this->serial->sendMessage(chr(42), 0);
-        $this->serial->sendMessage(chr($chunkHeight), 0);
-        $this->serial->sendMessage(chr($rowBytesClipped), 0);
+            usleep(100);
+        }
 
         $this->prevByte = '\n';
     }
