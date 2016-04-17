@@ -596,7 +596,7 @@ class Printer
     {
         $width  = $image->getImageWidth();
         $height = $image->getImageHeight();
-        $image->cropImage(384, $height, 0, 0);
+        // $image->cropImage(384, $height, 0, 0);
         if ($width > 384) {
             $width = 384;
         }
