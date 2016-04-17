@@ -552,7 +552,7 @@ class Printer
 
     public function printBitmap($w, $h, $bitmap, $LaaT = false)
     {
-        $rowBytes = ($w + 7) / 8;  # Round up to next byte boundary
+        $rowBytes = (int) (($w + 7) / 8);  # Round up to next byte boundary
         if ($rowBytes >= 48):
             $rowBytesClipped = 48;  # 384 pixels max width
         else:
@@ -565,33 +565,29 @@ class Printer
         # (no feed gaps) on large images...but has the
         # opposite effect on small images that would fit
         # in a single 'chunk', so use carefully!
-        if ($LaaT):
-            $maxChunkHeight = 1;
-        else:
-            $maxChunkHeight = 255;
-        endif;
+        $maxChunkHeight = $LaaT ? 1 : 255;
 
         $i = 0;
         $range1 = range(0, $h, $maxChunkHeight);
-        for ($rowStart = 0; $rowStart <= $range1; $rowStart++):
+        for ($rowStart = 0; $rowStart <= $range1; $rowStart++) {
             $chunkHeight = $h - $rowStart;
-            if ($chunkHeight > $maxChunkHeight):
+            if ($chunkHeight > $maxChunkHeight) {
                 $chunkHeight = $maxChunkHeight;
-            endif;
+            }
 
             # Timeout wait happens here
             $this->writeBytes(18, 42, $chunkHeight, $rowBytesClipped);
 
-            for ($y = 0; $y <= $chunkHeight; $y++):
-                for ($x = 0; $x <= $rowBytesClipped; $x++):
+            for ($y = 0; $y <= $chunkHeight; $y++) {
+                for ($x = 0; $x <= $rowBytesClipped; $x++) {
                     $this->serial->sendMessage(chr($bitmap[$i]));
                     $i += 1;
-                endfor;
+                }
                 $i += $rowBytes - $rowBytesClipped;
-            endfor;
+            }
 
             $this->timeoutSet($chunkHeight * $this->dotPrintTime);
-        endfor;
+        }
 
         $this->prevByte = '\n';
     }
@@ -609,9 +605,7 @@ class Printer
 
         $bitmap = array_fill(0, $rowBytes * $height, null);
 
-        echo "boucle\n";
         for ($y = 0; $y < $height; $y++) {
-            echo "y: $y\n";
             $pixels = $image->exportImagePixels(0, $y, $width, 1, 'R', \Imagick::PIXEL_CHAR);
             $pixels = array_map(function ($value) {
                 return 0 === $value ? 0 : 255;
