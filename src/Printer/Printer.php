@@ -604,7 +604,6 @@ class Printer
         $bitmap = $image->exportImagePixels(0, 0, $width, $height, 'R', \Imagick::PIXEL_CHAR);
 
         $this->printBitmap($width, $height, $bitmap, true);
-
     }
 
     // @TODO
@@ -743,9 +742,9 @@ class Printer
     public function println()
     {
         $args = func_get_args();
-        foreach($args as $arg):
-            $this->write((string)$arg);
-        endforeach;
+        foreach($args as $arg) {
+            $this->write((string) $arg);
+        }
 
         $this->write('\n');
     }
