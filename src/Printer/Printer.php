@@ -637,7 +637,7 @@ class Printer
             return $value;
         }, $bitmap);
 
-        $this->printBitmap($width, $height, $bitmap, true);
+        $this->printBitmap($width, $height, $bitmap, false);
     }
 
     # Take the printer offline. Print commands sent after this
