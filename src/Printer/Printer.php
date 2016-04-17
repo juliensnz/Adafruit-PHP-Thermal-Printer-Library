@@ -240,6 +240,7 @@ class Printer
         $this->timeoutSet(sizeof($args) * $this->byteTime);
 
         foreach ($args as $arg) {
+            echo $arg . "\n";
             $this->serial->sendMessage(chr($arg));
         }
     }
@@ -580,6 +581,7 @@ class Printer
 
             for ($y = 0; $y <= $chunkHeight; $y++) {
                 for ($x = 0; $x <= $rowBytesClipped; $x++) {
+                    echo $bitmap[$i] . "\n";
                     $this->serial->sendMessage(chr($bitmap[$i]));
                     $i += 1;
                 }
@@ -596,7 +598,7 @@ class Printer
     {
         $width  = $image->getImageWidth();
         $height = $image->getImageHeight();
-        // $image->cropImage(384, $height, 0, 0);
+        $image->cropImage(384, $height, 0, 0);
         if ($width > 384) {
             $width = 384;
         }
