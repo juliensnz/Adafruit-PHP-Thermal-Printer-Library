@@ -587,7 +587,7 @@ class Printer
                 $i += $rowBytes - $rowBytesClipped;
             }
 
-            $this->timeoutSet($chunkHeight * $this->dotPrintTime);
+            // $this->timeoutSet($chunkHeight * $this->dotPrintTime);
         }
 
         $this->prevByte = '\n';
