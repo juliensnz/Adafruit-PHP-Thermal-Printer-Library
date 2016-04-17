@@ -87,7 +87,7 @@ class Printer
     protected $DOUBLE_WIDTH_MASK;
     protected $STRIKE_MASK;
 
-    public function __construct($config = array())
+    public function __construct($config = [])
     {
         $optionsResolver = new OptionsResolver();
         $optionsResolver->setDefaults($this->defaults);
@@ -240,7 +240,6 @@ class Printer
         $this->timeoutSet(sizeof($args) * $this->byteTime);
 
         foreach ($args as $arg) {
-            echo $arg . "\n";
             $this->serial->sendMessage(chr($arg));
         }
     }
@@ -554,11 +553,11 @@ class Printer
     public function printBitmap($w, $h, $bitmap, $LaaT = false)
     {
         $rowBytes = (int) (($w + 7) / 8);  # Round up to next byte boundary
-        if ($rowBytes >= 48):
+        if ($rowBytes >= 48) {
             $rowBytesClipped = 48;  # 384 pixels max width
-        else:
+        } else {
             $rowBytesClipped = $rowBytes;
-        endif;
+        }
 
         # if LaaT (line-at-a-time) is True, print bitmaps
         # scanline-at-a-time (rather than in chunks).
@@ -569,8 +568,9 @@ class Printer
         $maxChunkHeight = $LaaT ? 1 : 255;
 
         $i = 0;
-        $range1 = range(0, $h, $maxChunkHeight);
-        for ($rowStart = 0; $rowStart <= $range1; $rowStart++) {
+        $range1 = range(0, $h - 1, $maxChunkHeight);
+
+        for ($rowStart = 0; $rowStart < ($h * $maxChunkHeight); $rowStart++) {
             $chunkHeight = $h - $rowStart;
             if ($chunkHeight > $maxChunkHeight) {
                 $chunkHeight = $maxChunkHeight;
@@ -579,9 +579,8 @@ class Printer
             # Timeout wait happens here
             $this->writeBytes(18, 42, $chunkHeight, $rowBytesClipped);
 
-            for ($y = 0; $y <= $chunkHeight; $y++) {
-                for ($x = 0; $x <= $rowBytesClipped; $x++) {
-                    echo $bitmap[$i] . "\n";
+            for ($y = 0; $y < $chunkHeight; $y++) {
+                for ($x = 0; $x < $rowBytesClipped; $x++) {
                     $this->serial->sendMessage(chr($bitmap[$i]));
                     $i += 1;
                 }
@@ -640,45 +639,6 @@ class Printer
 
         $this->printBitmap($width, $height, $bitmap, true);
     }
-
-    // @TODO
-    # Print Image.  Requires Python Imaging Library.  This is
-    # specific to the Python port and not present in the Arduino
-    # library.  Image will be cropped to 384 pixels width if
-    # necessary, and converted to 1-bit w/diffusion dithering.
-    # For any other behavior (scale, B&W threshold, etc.), use
-    # the Imaging Library to perform such operations before
-    # passing the result to this function.
-    /*public function printImage(self, image, LaaT=False):
-        import Image
-
-        if image.mode != '1':
-            image = image.convert('1')
-
-        width  = image.size[0]
-        height = image.size[1]
-        if width > 384:
-            width = 384
-        rowBytes = (width + 7) / 8
-        bitmap   = bytearray(rowBytes * height)
-        pixels   = image.load()
-
-        for y in range(height):
-            n = y * rowBytes
-            x = 0
-            for b in range(rowBytes):
-                sum = 0
-                bit = 128
-                while bit > 0:
-                    if x >= width: break
-                    if pixels[x, y] == 0:
-                        sum |= bit
-                    x    += 1
-                    bit >>= 1
-                bitmap[n + b] = sum
-
-        $this->printBitmap(width, height, bitmap, LaaT)
-    */
 
     # Take the printer offline. Print commands sent after this
     # will be ignored until 'online' is called.
