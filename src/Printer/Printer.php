@@ -596,7 +596,7 @@ class Printer
     {
         $width  = $image->getImageWidth();
         $height = $image->getImageHeight();
-
+        $image->cropImage(384, $height, 0, 0);
         if ($width > 384) {
             $width = 384;
         }
@@ -633,7 +633,7 @@ class Printer
         }
 
         $bitmap = array_map(function ($value) {
-            return ord($value);
+            return $value;
         }, $bitmap);
 
         $this->printBitmap($width, $height, $bitmap, true);
