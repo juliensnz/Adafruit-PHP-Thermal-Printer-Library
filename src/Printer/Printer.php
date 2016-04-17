@@ -249,6 +249,7 @@ class Printer
     {
         $data = func_get_args();
         for ($i = 0; $i <= sizeof($data); $i++) {
+            var_dump($data);
             $c = $data[$i];
             if ($c != 0x13) {
                 $this->timeoutWait();
