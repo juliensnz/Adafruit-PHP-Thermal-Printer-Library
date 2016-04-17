@@ -600,7 +600,6 @@ class Printer
     {
         $width  = $image->getImageWidth();
         $height = $image->getImageHeight();
-        $image->setImageColorspace(\Imagick::COLORSPACE_GRAY);
 
         if ($width > 384) {
             $width = 384;
@@ -610,7 +609,9 @@ class Printer
 
         $bitmap = array_fill(0, $rowBytes * $height, null);
 
+        echo "boucle\n";
         for ($y = 0; $y < $height; $y++) {
+            echo "y: $y\n";
             $pixels = $image->exportImagePixels(0, $y, $width, $height, 'R', \Imagick::PIXEL_CHAR);
             $pixels = array_map(function ($value) {
                 return 0 === $value ? 0 : 255;
