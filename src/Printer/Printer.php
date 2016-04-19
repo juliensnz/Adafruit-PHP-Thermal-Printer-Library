@@ -155,8 +155,8 @@ class Printer
         $this->writeBytes(
           27,        # Esc
           55,        # 7 (print settings)
-          32,        # Heat dots (20 = balance darkness w/no jams)
-          55,        # Lib default = 45
+          30,        # Heat dots (20 = balance darkness w/no jams)
+          110,        # Lib default = 45
           250        # Heat interval (500 uS = slower but darker)
         );
 
@@ -249,7 +249,6 @@ class Printer
     {
         $data = func_get_args();
         for ($i = 0; $i < count($data); $i++) {
-            var_dump($data);
             $c = $data[$i];
             if ($c != 0x13) {
                 $this->timeoutWait();
