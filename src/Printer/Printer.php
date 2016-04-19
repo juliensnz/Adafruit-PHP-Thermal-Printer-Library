@@ -589,10 +589,10 @@ class Printer
                     $i += 1;
                 }
                 $i += $rowBytes - $rowBytesClipped;
-                usleep(10);
+                usleep(10000);
             }
 
-            usleep(100);
+            usleep(1000);
         }
 
         $this->prevByte = '\n';
